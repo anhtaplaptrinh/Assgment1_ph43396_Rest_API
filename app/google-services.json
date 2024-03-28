@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "952476109131",
+    "project_id": "assigment-rest-api-2e082",
+    "storage_bucket": "assigment-rest-api-2e082.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:952476109131:android:fe749a518de9d16ca840ce",
+        "android_client_info": {
+          "package_name": "com.example.assgment_ph43396_rest_api_and"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBq3cR4TH-Dy-yySdNeKTiSSd7wYHakqI0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

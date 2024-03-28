@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/backgroud"
+    tools:context=".Register">
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:layout_marginBottom="30dp"
+        android:src="@drawable/siginlogo"
+        android:layout_marginTop="30dp"/>
+    <EditText
+        android:id="@+id/edemail"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:hint="Email"
+        android:background="@drawable/khung"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:paddingLeft="10dp"
+        android:drawablePadding="10dp"
+        android:layout_marginBottom="20dp"/>
+
+    <EditText
+        android:id="@+id/edpassword"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/khung"
+        android:hint="Mật khẩu mới"
+        android:inputType="textPassword"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:paddingLeft="10dp"
+        android:drawablePadding="10dp"
+        android:layout_marginBottom="20dp"/>
+
+    <EditText
+        android:id="@+id/edrppassword"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:hint="Xác nhận mật khẩu mới"
+        android:inputType="textPassword"
+        android:background="@drawable/khung"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:paddingLeft="10dp"
+        android:drawablePadding="10dp"
+        android:layout_marginBottom="20dp"/>
+
+    <Button
+        android:id="@+id/btnsignup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tạo tài khoản"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="30dp"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You have an account? Click  "
+            android:textSize="16dp"
+            android:textColor="@color/white"
+            />
+        <TextView
+            android:id="@+id/txtLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sgin In"
+            android:textSize="16dp"
+            android:layout_gravity="center"
+            android:textColor="@color/yellow"
+            />
+    </LinearLayout>
+</LinearLayout>
