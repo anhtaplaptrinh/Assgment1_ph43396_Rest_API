@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,13 +39,16 @@ public class Home extends AppCompatActivity {
     ImageView anh;
     Uri selectedImage;
     SanphamModel sanphamModel;
+    EditText search;
+
     private static final int REQUEST_MANAGE_EXTERNAL_STORAGE_PERMISSION = 1001;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home);
-
+        search = findViewById(R.id.search);
+        recyclerView = findViewById(R.id.recyclerViewSinhVien);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(APIServer.DOMAIN)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -59,8 +64,26 @@ public class Home extends AppCompatActivity {
                 them(Home.this, 0, sanphamModel);
             }
         });
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String keyword = s.toString().trim();
+
+                searchSanphamModel(keyword);
+            }
+        });
     }
+
 
     void loadData(){
         Call<List<SanphamModel>> call = apiService.getSanphams();
@@ -73,7 +96,7 @@ public class Home extends AppCompatActivity {
 
                     adapter = new AdapterSanpham(list,  getApplicationContext(), Home.this);
 
-                    recyclerView = findViewById(R.id.recyclerViewSinhVien);
+
                     recyclerView.setLayoutManager(new LinearLayoutManager(Home.this));
                     recyclerView.setAdapter(adapter);
                 }
@@ -247,6 +270,25 @@ public class Home extends AppCompatActivity {
             return path;
         }
         return uri.getPath();
+    }
+    private void searchSanphamModel(String keyword) {
+        Call<List<SanphamModel>> call = apiService.searchSanphamModel(keyword);
+        call.enqueue(new Callback<List<SanphamModel>>() {
+            @Override
+            public void onResponse(Call<List<SanphamModel>> call, Response<List<SanphamModel>> response) {
+                if (response.isSuccessful()) {
+                    list = response.body();
+                    adapter = new AdapterSanpham(list, getApplicationContext(), Home.this);
+                    recyclerView.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<SanphamModel>> call, Throwable t) {
+                Log.e("Search", "Search failed: " + t.toString());
+                Toast.makeText(Home.this, "Đã xảy ra lỗi kh tìm kiếm", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

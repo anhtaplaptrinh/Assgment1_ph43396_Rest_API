@@ -9,9 +9,10 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface APIServer {
-    String DOMAIN = "http://192.168.1.12:3000";
+    String DOMAIN = "http://192.168.1.10:3000";
     @GET("/api/list")
     Call<List<SanphamModel>> getSanphams();
     @POST("/api/add")
@@ -25,4 +26,6 @@ public interface APIServer {
             @Path("id") String id,
             @Body SanphamModel sanphamModel
     );
+    @GET("/api/search")
+    Call<List<SanphamModel>> searchSanphamModel(@Query("q") String query);
 }
