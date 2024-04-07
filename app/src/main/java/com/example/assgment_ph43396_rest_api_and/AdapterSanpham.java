@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
@@ -41,12 +42,14 @@ public class AdapterSanpham extends RecyclerView.Adapter<AdapterSanpham.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         SanphamModel sanphamModel = list.get(position);
         NumberFormat numberFormat = NumberFormat.getNumberInstance();
-
         holder.tvten.setText(sanphamModel.getTen());
         holder.tvgia.setText(numberFormat.format(sanphamModel.getGia()) + " đ");
         holder.tvsoluong.setText(sanphamModel.getSoluong());
 
-        Picasso.get().load(sanphamModel.getAnh()).into(holder.avatar);
+        Glide.with(context)
+                .load(sanphamModel.getAnh())
+                .thumbnail(Glide.with(context).load(R.drawable.loading))
+                .into(holder.avatar);
         holder.btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,7 +74,6 @@ public class AdapterSanpham extends RecyclerView.Adapter<AdapterSanpham.ViewHold
         TextView tvten, tvgia, tvsoluong;
         Button btnDelete, btnUpdate;
         ImageView avatar;
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             avatar = itemView.findViewById(R.id.avatar);

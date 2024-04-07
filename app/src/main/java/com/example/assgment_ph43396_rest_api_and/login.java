@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,106 +25,64 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 
 public class login extends AppCompatActivity {
-    private EditText editTextUsername, editTextPassword;
-    private CheckBox checkBoxRemember;
-    private Button buttonLogin;
-    private TextView textViewForgotPassword, textViewCreateAccount;
-    private EditText passwordEditText;
-    private ImageView showPasswordImage;
-    private FirebaseAuth mAuth;
+    APIServer apiServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        editTextUsername = findViewById(R.id.edemailLg);
-        editTextPassword = findViewById(R.id.edpasswordLg);
-        checkBoxRemember = findViewById(R.id.checkBoxRemember);
-        buttonLogin = findViewById(R.id.btnLogin);
-        textViewForgotPassword = findViewById(R.id.textViewForgotPassword);
-        textViewCreateAccount = findViewById(R.id.textViewCreateAccount);
+        EdgeToEdge.enable(this);
+        EditText taikhoan = findViewById(R.id.txtuser);
+        EditText matkhau = findViewById(R.id.txtpass);
 
-        passwordEditText = findViewById(R.id.edpasswordLg);
-        showPasswordImage = findViewById(R.id.imageViewRight);
-        mAuth = FirebaseAuth.getInstance();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(APIServer.DOMAIN)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
-        Intent intent = getIntent();
-        if (intent != null) {
-            Bundle ex = intent.getExtras();
-            if (ex != null) {
-                editTextUsername.setText(ex.getString("email"));
-                editTextPassword.setText(ex.getString("password"));
-            }
-        }
-        buttonLogin.setOnClickListener(new View.OnClickListener() {
+        apiServer = retrofit.create((APIServer.class));
+
+        findViewById(R.id.btndangky).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                String email = editTextUsername.getText().toString();
-                String password = editTextPassword.getText().toString();
-                if (email.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(login.this, "Không được bỏ trống!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (!isValidEmail(email)) {
-                    Toast.makeText(login.this, "Địa chỉ email không hợp lệ!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                mAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(login.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    Log.d(TAG, "signInWithEmail:success");
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    Toast.makeText(login.this, "Đăng Nhập Thành công", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(login.this, Home.class);
-                                    startActivity(intent);
-
-                                } else {
-                                    Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                    Toast.makeText(login.this, "Sai Tài Khoản Hoặc Mật khẩu!",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-            }
-        });
-
-
-        textViewForgotPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Toast.makeText(login.this, "Quên mật khẩu", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        textViewCreateAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Chuyển sang trang đăng ký (RegisterActivity)
+            public void onClick(View view) {
                 Intent intent = new Intent(login.this, Register.class);
-                startActivity(intent);
+                startActivity((intent));
             }
         });
-        showPasswordImage.setOnClickListener(new View.OnClickListener() {
+
+
+        findViewById(R.id.btndangnhap).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                boolean isPasswordVisible = passwordEditText.getInputType() != InputType.TYPE_TEXT_VARIATION_PASSWORD;
+            public void onClick(View view) {
+                UserModel user = new UserModel();
+                String _username = taikhoan.getText().toString().trim();
+                String _password = matkhau.getText().toString().trim();
+                user.setUsername(_username);
+                user.setPassword(_password);
 
-                passwordEditText.setInputType(isPasswordVisible ? InputType.TYPE_TEXT_VARIATION_PASSWORD : InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                Call<UserModel> call = apiServer.login(user);
+                call.enqueue(new Callback<UserModel>() {
+                    @Override
+                    public void onResponse(Call<UserModel> call, retrofit2.Response<UserModel> response) {
+                        if (response.isSuccessful()){
+                            Toast.makeText(login.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(login.this, Home.class));
+                        }
+                    }
 
-                int newImageResource = isPasswordVisible ? R.drawable.ic_visibility_off : R.drawable.ic_visibility_on;
-                showPasswordImage.setImageResource(newImageResource);
+                    @Override
+                    public void onFailure(Call<UserModel> call, Throwable t) {
+                        Toast.makeText(login.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
-
-    }
-
-    private boolean isValidEmail(String email) {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
-
     }
 }

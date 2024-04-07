@@ -1,5 +1,8 @@
 package com.example.assgment_ph43396_rest_api_and;
 
+import static android.content.ContentValues.TAG;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -19,12 +22,29 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
+import com.bumptech.glide.Glide;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,20 +55,20 @@ public class Home extends AppCompatActivity {
     AdapterSanpham adapter;
     List<SanphamModel> list;
     APIServer apiService;
-    EditText edten, edgia, edsoluong, edtlinkurl;
+    EditText edten, edgia, edsoluong,search;
     ImageView anh;
     Uri selectedImage;
     SanphamModel sanphamModel;
-    EditText search;
-
-    private static final int REQUEST_MANAGE_EXTERNAL_STORAGE_PERMISSION = 1001;
+    File file;
+    MultipartBody.Part multipartBody;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home);
-        search = findViewById(R.id.search);
         recyclerView = findViewById(R.id.recyclerViewSinhVien);
+        search = findViewById(R.id.search);
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(APIServer.DOMAIN)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -82,6 +102,58 @@ public class Home extends AppCompatActivity {
                 searchSanphamModel(keyword);
             }
         });
+        findViewById(R.id.giam).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Call<List<SanphamModel>> call = apiService.getGiam();
+                call.enqueue(new Callback<List<SanphamModel>>() {
+                    @Override
+                    public void onResponse(Call<List<SanphamModel>> call, Response<List<SanphamModel>> response) {
+                        if (response.isSuccessful()) {
+                            list = response.body();
+
+                            adapter = new AdapterSanpham(list,  getApplicationContext(), Home.this);
+
+                            recyclerView.setLayoutManager(new LinearLayoutManager(Home.this));
+                            recyclerView.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<SanphamModel>> call, Throwable t) {
+                        Log.e("Main", t.getMessage());
+                    }
+                });
+            }
+        });
+        findViewById(R.id.tang).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Call<List<SanphamModel>> call = apiService.getTang();
+                call.enqueue(new Callback<List<SanphamModel>>() {
+                    @Override
+                    public void onResponse(Call<List<SanphamModel>> call, Response<List<SanphamModel>> response) {
+                        if (response.isSuccessful()) {
+                            list = response.body();
+
+                            adapter = new AdapterSanpham(list,  getApplicationContext(), Home.this);
+
+                            recyclerView.setLayoutManager(new LinearLayoutManager(Home.this));
+                            recyclerView.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<SanphamModel>> call, Throwable t) {
+                        Log.e("Main", t.getMessage());
+                    }
+                });
+                Toast.makeText(Home.this, "Linh dep trai", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
 
@@ -125,37 +197,58 @@ public class Home extends AppCompatActivity {
         edten = dialog.findViewById(R.id.edtten);
         edgia = dialog.findViewById(R.id.edtgia);
         edsoluong = dialog.findViewById(R.id.edtsoluong);
-        edtlinkurl = dialog.findViewById(R.id.edturl);
+        anh = dialog.findViewById(R.id.imgImage);
 
+        anh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseImage();
+            }
+        });
         if (type != 0){
             edten.setText(sanphamModel.getTen());
             edgia.setText(sanphamModel.getGia()+"");
-            edsoluong.setText(sanphamModel.getSoluong());
-            edtlinkurl.setText(sanphamModel.getAnh());
+            edsoluong = dialog.findViewById(R.id.edtsoluong);
+            Glide.with(context)
+                    .load(sanphamModel.getAnh())
+                    .thumbnail(Glide.with(context).load(R.drawable.loading))
+                    .into(anh);
+            Log.d(TAG, "them: " + sanphamModel.getAnh());
         }
         dialog.findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String ten = edten.getText().toString();
+
+                Map<String, RequestBody> mapRequestBody = new HashMap<>();
+                String _ten = edten.getText().toString();
                 String giastr = edgia.getText().toString();
-                String soluong = edsoluong.getText().toString();
-                String anh = edtlinkurl.getText().toString();
-                if (ten.length() == 0 || giastr.length() == 0 || soluong.length() == 0 || anh.length() == 0){
+                String _soluong = edsoluong.getText().toString();
+
+                if (file != null) {
+                    RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
+                    multipartBody = MultipartBody.Part.createFormData("anh", file.getName(), requestFile);
+                } else {
+                    multipartBody = null;
+                }
+
+                if (_ten.length() == 0 || giastr.length() == 0 || _soluong.length() == 0){
                     Toast.makeText(context, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 try {
-                    Double gia = Double.parseDouble(giastr);
+                    Double _gia = Double.parseDouble(giastr);
 
-                    if (gia > 0){
-                        SanphamModel sanphamModel1 = new SanphamModel(ten,anh, gia, soluong);
+                    mapRequestBody.put("ten", getRequestBody(_ten));
+                    mapRequestBody.put("gia", getRequestBody(String.valueOf(_gia)));
+                    mapRequestBody.put("soluong", getRequestBody(_soluong));
 
+                    if (_gia > 0){
                         if (type == 0){
-                            Call<Void> call = apiService.addSanpham(sanphamModel1);
-                            call.enqueue(new Callback<Void>() {
+                            Call<SanphamModel> call = apiService.addSanpham(mapRequestBody, multipartBody);
+                            call.enqueue(new Callback<SanphamModel>() {
                                 @Override
-                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                public void onResponse(Call<SanphamModel> call, Response<SanphamModel> response) {
                                     if (response.isSuccessful()) {
                                         loadData();
                                         Toast.makeText(Home.this, "Thêm thành công", Toast.LENGTH_SHORT).show();
@@ -165,32 +258,54 @@ public class Home extends AppCompatActivity {
                                     }
                                 }
                                 @Override
-                                public void onFailure(Call<Void> call, Throwable t) {
+                                public void onFailure(Call<SanphamModel> call, Throwable t) {
                                     Log.e("Home", "Call failed: " + t.toString());
                                     Toast.makeText(Home.this, "Đã xảy ra lỗi khi thêm dữ liệu", Toast.LENGTH_SHORT).show();
                                 }
 
                             });
                         }else{
-                            Call<Void> call = apiService.updateSanpham(sanphamModel.get_id(), sanphamModel1);
-                            call.enqueue(new Callback<Void>() {
-                                @Override
-                                public void onResponse(Call<Void> call, Response<Void> response) {
-                                    if (response.isSuccessful()) {
-                                        loadData();
-                                        Toast.makeText(Home.this, "Sửa thành công", Toast.LENGTH_SHORT).show();
-                                        dialog.dismiss();
-                                    } else {
-                                        Toast.makeText(Home.this, "Sửa thất bại", Toast.LENGTH_SHORT).show();
+                            if (multipartBody != null){
+                                Call<SanphamModel> call = apiService.updateSanpham(mapRequestBody, sanphamModel.get_id() , multipartBody);
+                                call.enqueue(new Callback<SanphamModel>() {
+                                    @Override
+                                    public void onResponse(Call<SanphamModel> call, Response<SanphamModel> response) {
+                                        if (response.isSuccessful()) {
+                                            loadData();
+                                            Toast.makeText(Home.this, "Sửa thành công", Toast.LENGTH_SHORT).show();
+                                            dialog.dismiss();
+                                        } else {
+                                            Toast.makeText(Home.this, "Sửa thất bại", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                }
-                                @Override
-                                public void onFailure(Call<Void> call, Throwable t) {
-                                    Log.e("Home", "Call failed: " + t.toString());
-                                    Toast.makeText(Home.this, "Đã xảy ra lỗi khi sửa dữ liệu", Toast.LENGTH_SHORT).show();
-                                }
+                                    @Override
+                                    public void onFailure(Call<SanphamModel> call, Throwable t) {
+                                        Log.e("Home", "Call failed: " + t.toString());
+                                        Toast.makeText(Home.this, "Đã xảy ra lỗi khi sửa dữ liệu", Toast.LENGTH_SHORT).show();
+                                    }
 
-                            });
+                                });
+                            }else{
+                                Call<SanphamModel> call = apiService.updateNoImage(mapRequestBody, sanphamModel.get_id());
+                                call.enqueue(new Callback<SanphamModel>() {
+                                    @Override
+                                    public void onResponse(Call<SanphamModel> call, Response<SanphamModel> response) {
+                                        if (response.isSuccessful()) {
+                                            loadData();
+                                            Toast.makeText(Home.this, "Sửa thành công no image", Toast.LENGTH_SHORT).show();
+                                            dialog.dismiss();
+                                        } else {
+                                            Toast.makeText(Home.this, "Sửa thất bại no image", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                    @Override
+                                    public void onFailure(Call<SanphamModel> call, Throwable t) {
+                                        Log.e("Home", "Call failed: " + t.toString());
+                                        Toast.makeText(Home.this, "Đã xảy ra lỗi khi sửa dữ liệu", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                });
+                            }
                         }
                     }else{
                         Toast.makeText(context, "Giá phải lớn hơn 0", Toast.LENGTH_SHORT).show();
@@ -254,31 +369,74 @@ public class Home extends AppCompatActivity {
 
     }
 
-    private void moThuVienAnh() {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(galleryIntent, 1);
+    private void chooseImage() {
+
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        getImage.launch(intent);
+
     }
 
-    private String getPath(Uri uri) {
-        String[] projection = { MediaStore.Images.Media.DATA };
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-        if (cursor != null) {
-            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            String path = cursor.getString(columnIndex);
-            cursor.close();
-            return path;
+    ActivityResultLauncher<Intent> getImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult o) {
+                    if (o.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = o.getData();
+                        Uri imageUri = data.getData();
+
+                        Log.d("RegisterActivity", imageUri.toString());
+
+                        file = createFileFormUri(imageUri, "anh");
+
+                        Glide.with(anh)
+                                .load(imageUri)
+                                .centerCrop()
+                                .circleCrop()
+                                .into(anh);
+                    }
+                }
+            });
+
+    private File createFileFormUri(Uri path, String name) {
+        File _file = new File(Home.this.getCacheDir(), name + ".png");
+        try {
+            InputStream in = Home.this.getContentResolver().openInputStream(path);
+            OutputStream out = new FileOutputStream(_file);
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            out.close();
+            in.close();
+            return _file;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return uri.getPath();
+
+        return null;
     }
+
+    private RequestBody getRequestBody(String value) {
+        return RequestBody.create(MediaType.parse("multipart/form-data"), value);
+    }
+
     private void searchSanphamModel(String keyword) {
-        Call<List<SanphamModel>> call = apiService.searchSanphamModel(keyword);
+        Call<List<SanphamModel>> call = apiService.searchCay(keyword);
         call.enqueue(new Callback<List<SanphamModel>>() {
             @Override
             public void onResponse(Call<List<SanphamModel>> call, Response<List<SanphamModel>> response) {
                 if (response.isSuccessful()) {
                     list = response.body();
-                    adapter = new AdapterSanpham(list, getApplicationContext(), Home.this);
+
+                    adapter = new AdapterSanpham(list,  getApplicationContext(), Home.this);
+
+                    recyclerView.setLayoutManager(new LinearLayoutManager(Home.this));
                     recyclerView.setAdapter(adapter);
                 }
             }

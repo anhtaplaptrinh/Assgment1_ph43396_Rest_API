@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="10dp"
     android:id="@+id/home"
-    android:layout_marginTop="30dp"
+    android:layout_marginTop="10dp"
     tools:context=".Home">
 
     <LinearLayout
@@ -14,49 +14,66 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Danh sách sản phẩm"
-            android:textSize="30dp"
             android:textStyle="bold"
-            android:gravity="center"
+            android:textSize="26dp"
             android:textColor="@color/blue"
-            android:layout_marginBottom="10dp"/>
+            android:layout_gravity="center"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:orientation="horizontal">
         <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="40dp"
+            android:layout_height="50dp"
             android:src="@drawable/timkiem"/>
         <EditText
             android:id="@+id/search"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:padding="10dp"
-            android:textSize="18dp"
-            android:hint="Tìm kiếm"
-            android:imeOptions="actionSearch"
-            android:inputType="text"/>
-
+            android:layout_height="wrap_content"
+            android:hint="Search"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            android:textStyle="bold" />
     </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:orientation="horizontal"
+            android:gravity="right">
+            <Button
+                android:id="@+id/giam"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/sortaz"/>
+            <Button
+                android:id="@+id/tang"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="30dp"
+                android:background="@drawable/sortza"
+                android:layout_marginRight="15dp"/>
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewSinhVien"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="5dp"/>
+            android:layout_marginTop="5dp" />
     </LinearLayout>
 
-    <ImageButton
+    <Button
         android:id="@+id/btnAdd"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:background="@drawable/oval"
         android:layout_gravity="bottom|end"
         android:layout_margin="10dp"
-        android:src="@drawable/add"
+        android:background="@drawable/add"
         />
+
 
 </FrameLayout>
