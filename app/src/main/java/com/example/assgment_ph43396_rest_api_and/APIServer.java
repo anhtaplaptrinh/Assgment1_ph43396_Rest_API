@@ -37,7 +37,7 @@ public interface APIServer {
     @Multipart
     @POST("/api/add")
     Call<SanphamModel> addSanpham(@PartMap Map<String, RequestBody> requestBodyMap,
-                     @Part MultipartBody.Part imageCay);
+                     @Part MultipartBody.Part imageSanpham);
 
     @DELETE("/api/delete/{id}")
     Call<Void> deleteSanpham(@Path("id") String id);
@@ -46,7 +46,7 @@ public interface APIServer {
     @PUT("/api/update/{id}")
     Call<SanphamModel> updateSanpham(@PartMap Map<String, RequestBody> requestBodyMap,
                         @Path("id") String id,
-                        @Part MultipartBody.Part imageCay
+                        @Part MultipartBody.Part imageSanPham
     );
 
     @Multipart
@@ -56,7 +56,7 @@ public interface APIServer {
     );
 
     @GET("/api/search")
-    Call<List<SanphamModel>> searchCay(@Query("key") String query);
+    Call<List<SanphamModel>> searchSanPham(@Query("key") String query);
     @GET("/api/giam-dan")
     Call<List<SanphamModel>> getGiam();
 

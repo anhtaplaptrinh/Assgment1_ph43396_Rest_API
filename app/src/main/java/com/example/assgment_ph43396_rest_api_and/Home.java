@@ -208,7 +208,7 @@ public class Home extends AppCompatActivity {
         if (type != 0){
             edten.setText(sanphamModel.getTen());
             edgia.setText(sanphamModel.getGia()+"");
-            edsoluong = dialog.findViewById(R.id.edtsoluong);
+            edsoluong.setText(sanphamModel.getSoluong()+"");
             Glide.with(context)
                     .load(sanphamModel.getAnh())
                     .thumbnail(Glide.with(context).load(R.drawable.loading))
@@ -427,7 +427,7 @@ public class Home extends AppCompatActivity {
     }
 
     private void searchSanphamModel(String keyword) {
-        Call<List<SanphamModel>> call = apiService.searchCay(keyword);
+        Call<List<SanphamModel>> call = apiService.searchSanPham(keyword);
         call.enqueue(new Callback<List<SanphamModel>>() {
             @Override
             public void onResponse(Call<List<SanphamModel>> call, Response<List<SanphamModel>> response) {
