@@ -64,6 +64,12 @@ public class login extends AppCompatActivity {
                 UserModel user = new UserModel();
                 String _username = taikhoan.getText().toString().trim();
                 String _password = matkhau.getText().toString().trim();
+
+                if(_username.length() == 0 || _password.length() == 0){
+                    Toast.makeText(login.this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 user.setUsername(_username);
                 user.setPassword(_password);
 
@@ -74,6 +80,8 @@ public class login extends AppCompatActivity {
                         if (response.isSuccessful()){
                             Toast.makeText(login.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(login.this, Home.class));
+                        }else{
+                            Toast.makeText(login.this, "Tên tài khoản hoặc mật khẩu không chính xác", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -82,6 +90,7 @@ public class login extends AppCompatActivity {
                         Toast.makeText(login.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
                     }
                 });
+
             }
         });
     }
