@@ -18,7 +18,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface APIServer {
-    String DOMAIN = "http://192.168.1.11:3000";
+    String DOMAIN = "http://10.24.39.225:3000";
     @GET("/api/list")
     Call<List<SanphamModel>> getSanphams();
     @Multipart

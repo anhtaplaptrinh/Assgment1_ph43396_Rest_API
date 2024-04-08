@@ -33,6 +33,7 @@
             android:id="@+id/edtten"
             android:layout_width="match_parent"
             android:layout_height="60dp"
+            android:background="@drawable/khung"
             android:hint="Tên"
             android:textColor="@color/black"
             android:textSize="15dp"/>
@@ -46,6 +47,7 @@
             android:id="@+id/edtgia"
             android:layout_width="match_parent"
             android:layout_height="60dp"
+            android:background="@drawable/khung"
             android:hint="Giá"
             android:textColor="@color/black"
             android:textSize="15dp"/>
@@ -59,7 +61,8 @@
             android:id="@+id/edtsoluong"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:hint="Số lụong"
+            android:hint="Số lương"
+            android:background="@drawable/khung"
             android:textColor="@color/black"
             android:textSize="15dp"/>
     </com.google.android.material.textfield.TextInputLayout>

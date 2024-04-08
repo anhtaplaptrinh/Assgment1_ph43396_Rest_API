@@ -77,6 +77,13 @@ public class Register extends AppCompatActivity {
                 chooseImage();
             }
         });
+        findViewById(R.id.btndangnhap).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Register.this, login.class);
+                startActivity((intent));
+            }
+        });
 
         findViewById(R.id.btndangnhapdk).setOnClickListener(new View.OnClickListener() {
             @Override

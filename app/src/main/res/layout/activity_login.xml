@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:gravity="center_vertical"
     android:padding="20dp"
-    android:background="@color/white"
+    android:background="@drawable/backgroud"
     tools:context=".login">
     <ImageView
         android:id="@+id/imageView"
@@ -27,6 +27,7 @@
             android:layout_height="60dp"
             android:hint="Email"
             android:textColor="@color/black"
+            android:background="@drawable/khung"
             android:textSize="15dp"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -42,41 +43,44 @@
             android:layout_height="60dp"
             android:hint="Password"
             android:inputType="textPassword"
+            android:background="@drawable/khung"
             android:textSize="15dp"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btndangnhap"
-        android:layout_width="match_parent"
+        android:layout_width="160dp"
         android:layout_height="50dp"
+        android:layout_gravity="center"
         android:background="@drawable/dangnhap"
         android:text="ĐĂNG NHẬP"
         android:textColor="@color/white"
         android:textStyle="bold"
         android:textSize="21dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="50dp"
         android:gravity="center">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Bạn chưa có tài khoản?"
-            android:textSize="18dp"/>
+            android:textColor="@color/white"
+            android:textSize="13dp"/>
 
         <TextView
             android:id="@+id/btndangky"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
+            android:textColor="@color/yellow"
             android:text="Đăng ký."
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:textColor="#E53935"/>
+            android:textSize="15dp"
+            android:textStyle="bold"/>
     </LinearLayout>
 
 
